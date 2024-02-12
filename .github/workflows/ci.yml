@@ -25,4 +25,4 @@ jobs:
           ninja -C build --verbose
       - name: Load Plugin
         run: |
-          clang-tidy-16 --load=build/libClangTidyPlugin.so --checks="-*,my-check" --list-checks
+          clang-tidy-16 --load=build/ClangTidyPlugin.so --checks="-*,my-check" --list-checks
