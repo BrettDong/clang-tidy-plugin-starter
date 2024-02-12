@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies on Ubuntu 22.04
+        run: |
+          sudo apt update
+          sudo apt install build-essential cmake curl ninja-build
+          curl -s https://apt.llvm.org/llvm.sh | sudo bash -s 16 all
+      - name: Build
+        run: |
+          cmake -B build -S . -G Ninja -D CMAKE_BUILD_TYPE=Release -D LLVM_DIR=/usr/lib/llvm-16/lib/cmake/llvm -D Clang_DIR=/usr/lib/llvm-16/lib/cmake/clang
+          ninja -C build --verbose
+      - name: Load Plugin
+        run: |
+          clang-tidy-16 --load=build/libClangTidyPlugin.so --checks="-*,my-check" --list-checks
